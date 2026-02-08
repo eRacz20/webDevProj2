@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🎬 Movie Watchlist</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🎬 Movie Watchlist</h1>
+
+<!-- STATS VIEW -->
+<section id="stats">
+    <p>Total Movies: <span id="totalMovies">0</span></p>
+    <p>Average Rating: <span id="avgRating">0</span></p>
+</section>
+
+<!-- ADD / EDIT FORM -->
+<section>
+    <h2>Add / Edit Movie</h2>
+
+    <form id="movieForm">
+        <!-- Hidden field for edit -->
+        <input type="hidden" id="movieId">
+
+        <label>Title</label>
+        <input type="text" id="title" required>
+
+        <label>Genre</label>
+        <input type="text" id="genre" required>
+
+        <label>Year</label>
+        <input type="number" id="year" min="1900" max="2100" required>
+
+        <label>Rating (1–10)</label>
+        <input type="number" id="rating" min="1" max="10" required>
+
+        <button type="submit">Save Movie</button>
+    </form>
+</section>
+
+<!-- LIST VIEW -->
+<section>
+    <h2>My Movies</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Year</th>
+                <th>Rating</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="movieTable"></tbody>
+    </table>
+
+    <!-- PAGING CONTROLS -->
+    <div style="margin-top: 10px;">
+        <button onclick="prevPage()">Prev</button>
+        <span id="pageNum">Page 1</span>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
