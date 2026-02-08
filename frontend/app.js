@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/movies"; // CHANGE after deploy
+const API_URL = "https://webdevproj2.onrender.com/movies";
 const PAGE_SIZE = 10;
 
 let movies = [];
