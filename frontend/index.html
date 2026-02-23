@@ -9,13 +9,12 @@
 
 <h1>🎬 Movie Watchlist</h1>
 
-<!-- STATS VIEW -->
 <section id="stats">
     <p>Total Movies: <span id="totalMovies">0</span></p>
+    <p>Page Size: <span id="currentPageSize">10</span></p>
     <p>Average Rating: <span id="avgRating">0</span></p>
 </section>
 
-<!-- ADD / EDIT FORM -->
 <section>
     <h2>Add / Edit Movie</h2>
 
@@ -29,26 +28,24 @@
         <input type="text" id="genre" required>
 
         <label>Year</label>
-        <input type="number" id="year" min="1900" max="2100" required>
+        <input type="number" id="year" required>
 
-        <label>Rating (1–10)</label>
-        <input type="number" id="rating" min="1" max="10" required>
+        <label>Rating</label>
+        <input type="number" id="rating" required>
 
         <label>Image URL</label>
-        <input type="text" id="image_url" placeholder="Paste poster image URL">
+        <input type="text" id="image_url">
 
-        <button type="submit">Save Movie</button>
+        <button type="submit">Save</button>
     </form>
 </section>
 
-<!-- LIST VIEW -->
 <section>
-    <div style="margin-bottom:10px;">
+
+<div style="margin-bottom:10px;">
     <input id="searchBox" placeholder="Search title">
 
-    <select id="genreFilter">
-        <option value="">All Genres</option>
-    </select>
+    <select id="genreFilter"></select>
 
     <select id="sortBy">
         <option value="">Sort By</option>
@@ -56,28 +53,38 @@
         <option value="year">Year</option>
         <option value="rating">Rating</option>
     </select>
+
+    <label>Page Size:</label>
+    <select id="pageSizeSelect">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+    </select>
 </div>
-    <h2>My Movies</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Poster</th>
-                <th>Title</th>
-                <th>Genre</th>
-                <th>Year</th>
-                <th>Rating</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="movieTable"></tbody>
-    </table>
+<h2>My Movies</h2>
 
-    <div style="margin-top: 10px;">
-        <button onclick="prevPage()">Prev</button>
-        <span id="pageNum">Page 1</span>
-        <button onclick="nextPage()">Next</button>
-    </div>
+<table>
+<thead>
+<tr>
+<th>Poster</th>
+<th>Title</th>
+<th>Genre</th>
+<th>Year</th>
+<th>Rating</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="movieTable"></tbody>
+</table>
+
+<div style="margin-top:10px;">
+<button onclick="prevPage()">Prev</button>
+<span id="pageNum">Page 1</span>
+<button onclick="nextPage()">Next</button>
+</div>
+
 </section>
 
 <script src="app.js"></script>

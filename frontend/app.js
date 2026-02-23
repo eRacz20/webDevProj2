@@ -1,148 +1,185 @@
-const API_URL = "http://localhost:5000/movies";
-const PAGE_SIZE = 10;
+const API_URL = "https://webdevproj2.onrender.com/movies";
 
 let movies = [];
 let currentPage = 1;
+let PAGE_SIZE = 10;
+
+// ---------- COOKIE ----------
+function setCookie(name, value) {
+    document.cookie = `${name}=${value};path=/;max-age=31536000`;
+}
+
+function getCookie(name) {
+    return document.cookie
+        .split("; ")
+        .find(row => row.startsWith(name + "="))
+        ?.split("=")[1];
+}
 
 // ---------- LOAD ----------
 async function loadMovies() {
     const res = await fetch(API_URL);
     movies = await res.json();
+
+    const saved = getCookie("pageSize");
+    if (saved) {
+        PAGE_SIZE = Number(saved);
+        pageSizeSelect.value = saved;
+    }
+
     populateGenres();
     renderMovies();
 }
 
 // ---------- FORM ----------
-document.getElementById("movieForm").addEventListener("submit", async (e) => {
+movieForm.addEventListener("submit", async e => {
     e.preventDefault();
-
-    const id = movieId.value;
 
     const movie = {
         title: title.value,
         genre: genre.value,
         year: Number(year.value),
-        rating: Number(rating.value),
+        rating: Number(rating.value),   // ⭐ ensure number
         image_url: image_url.value
     };
 
-    if (id) {
-        await fetch(`${API_URL}/${id}`, {
+    if (movieId.value)
+        await fetch(`${API_URL}/${movieId.value}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type":"application/json"},
             body: JSON.stringify(movie)
         });
-    } else {
+    else
         await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(movie)
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(movie)
         });
-    }
 
-    e.target.reset();
+    movieForm.reset();
     movieId.value = "";
     loadMovies();
 });
 
+// ---------- EDIT ----------
+function editMovie(id) {
+    const m = movies.find(x => x.id === id);
+    movieId.value = m.id;
+    title.value = m.title;
+    genre.value = m.genre;
+    year.value = m.year;
+    rating.value = m.rating;
+    image_url.value = m.image_url || "";
+}
+
 // ---------- DELETE ----------
 async function deleteMovie(id) {
     if (!confirm("Delete this movie?")) return;
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    await fetch(`${API_URL}/${id}`, {method:"DELETE"});
     loadMovies();
 }
 
-// ---------- EDIT ----------
-function editMovie(id) {
-    const movie = movies.find(m => m.id === id);
-    movieId.value = movie.id;
-    title.value = movie.title;
-    genre.value = movie.genre;
-    year.value = movie.year;
-    rating.value = movie.rating;
-    image_url.value = movie.image_url || "";
-}
-
-// ---------- GENRE LIST ----------
-function populateGenres() {
-    const genres = [...new Set(movies.map(m => m.genre))];
-    genreFilter.innerHTML =
-        `<option value="">All Genres</option>` +
-        genres.map(g => `<option>${g}</option>`).join("");
-}
-
 // ---------- FILTER ----------
-function getFilteredMovies() {
-    let filtered = [...movies];
+function getFiltered() {
+    let list = [...movies];
 
     if (searchBox.value)
-        filtered = filtered.filter(m =>
+        list = list.filter(m =>
             m.title.toLowerCase().includes(searchBox.value.toLowerCase())
         );
 
     if (genreFilter.value)
-        filtered = filtered.filter(m => m.genre === genreFilter.value);
+        list = list.filter(m => m.genre === genreFilter.value);
 
     if (sortBy.value)
-        filtered.sort((a, b) =>
+        list.sort((a,b)=>
             typeof a[sortBy.value] === "string"
                 ? a[sortBy.value].localeCompare(b[sortBy.value])
-                : b[sortBy.value] - a[sortBy.value]
+                : b[sortBy.value]-a[sortBy.value]
         );
 
-    return filtered;
+    return list;
 }
 
 // ---------- RENDER ----------
 function renderMovies() {
-    const table = movieTable;
-    table.innerHTML = "";
+    movieTable.innerHTML = "";
 
-    const filtered = getFilteredMovies();
+    const filtered = getFiltered();
 
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const pageMovies = filtered.slice(start, start + PAGE_SIZE);
+    const start = (currentPage-1)*PAGE_SIZE;
+    const page = filtered.slice(start,start+PAGE_SIZE);
 
-    pageMovies.forEach(movie => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
+    page.forEach(m=>{
+        movieTable.innerHTML += `
+        <tr>
             <td>
-                <img src="${movie.image_url || 'https://via.placeholder.com/80'}"
-                onerror="this.src='https://via.placeholder.com/80'" width="60">
+                <img src="${m.image_url || 'https://via.placeholder.com/80'}"
+                onerror="this.src='https://via.placeholder.com/80'"
+                width="60">
             </td>
-            <td>${movie.title}</td>
-            <td>${movie.genre}</td>
-            <td>${movie.year}</td>
-            <td>${movie.rating}</td>
+            <td>${m.title}</td>
+            <td>${m.genre}</td>
+            <td>${m.year}</td>
+            <td>${m.rating}</td>
             <td>
-                <button onclick="editMovie(${movie.id})">Edit</button>
-                <button onclick="deleteMovie(${movie.id})">Delete</button>
+                <button onclick="editMovie(${m.id})">Edit</button>
+                <button onclick="deleteMovie(${m.id})">Delete</button>
             </td>
-        `;
-        table.appendChild(row);
+        </tr>`;
     });
 
     pageNum.textContent = `Page ${currentPage}`;
+
+    // ⭐ FIX — UPDATE STATS HERE
+    updateStats(filtered);
+}
+
+// ---------- STATS ----------
+function updateStats(filtered) {
     totalMovies.textContent = filtered.length;
+    currentPageSize.textContent = PAGE_SIZE;
+
+    if (filtered.length === 0) {
+        avgRating.textContent = 0;
+        return;
+    }
+
+    const avg =
+        filtered.reduce((sum, m) => sum + Number(m.rating || 0), 0)
+        / filtered.length;
+
+    avgRating.textContent = avg.toFixed(1);
+}
+
+// ---------- GENRES ----------
+function populateGenres(){
+    const genres=[...new Set(movies.map(m=>m.genre))];
+    genreFilter.innerHTML="<option value=''>All Genres</option>"
+        +genres.map(g=>`<option>${g}</option>`).join("");
 }
 
 // ---------- PAGING ----------
-function nextPage() {
+function nextPage(){
     currentPage++;
     renderMovies();
 }
 
-function prevPage() {
-    if (currentPage > 1) {
-        currentPage--;
-        renderMovies();
-    }
+function prevPage(){
+    if(currentPage>1){currentPage--;renderMovies();}
 }
 
 // ---------- EVENTS ----------
-searchBox.oninput = () => { currentPage = 1; renderMovies(); };
-genreFilter.onchange = () => { currentPage = 1; renderMovies(); };
-sortBy.onchange = () => { currentPage = 1; renderMovies(); };
+searchBox.oninput=()=>{currentPage=1;renderMovies();}
+genreFilter.onchange=()=>{currentPage=1;renderMovies();}
+sortBy.onchange=()=>{currentPage=1;renderMovies();}
+
+pageSizeSelect.onchange=()=>{
+    PAGE_SIZE=Number(pageSizeSelect.value);
+    setCookie("pageSize",PAGE_SIZE);
+    currentPage=1;
+    renderMovies();
+}
 
 // ---------- INIT ----------
 loadMovies();

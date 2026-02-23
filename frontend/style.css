@@ -1,51 +1,141 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background: #f7f7f7;
+/* ---------- RESET ---------- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
+/* ---------- BACKGROUND ---------- */
+body {
+    background: linear-gradient(135deg, #1f2937, #111827);
+    color: #eee;
+    padding: 25px;
+}
+
+/* ---------- HEADER ---------- */
 h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    color: #facc15;
+}
+
+/* ---------- SECTIONS ---------- */
+section {
+    background: #1f2937;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* ---------- STATS ---------- */
+#stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.2rem;
     text-align: center;
 }
 
-section {
-    background: white;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+#stats span {
+    font-weight: bold;
+    color: #facc15;
+}
+
+/* ---------- FORM ---------- */
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    align-items: end;
 }
 
 label {
-    display: block;
-    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #bbb;
 }
 
-input {
-    width: 220px;
-    padding: 5px;
+input, select {
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    background: #374151;
+    color: white;
+}
+
+input:focus {
+    outline: 2px solid #facc15;
 }
 
 button {
-    margin-top: 10px;
-    padding: 5px 10px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #facc15;
+    color: black;
+    font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
 }
 
+button:hover {
+    background: #fde047;
+    transform: translateY(-1px);
+}
+
+/* ---------- FILTER BAR ---------- */
+#searchBox, #genreFilter, #sortBy, #pageSizeSelect {
+    margin-right: 8px;
+    margin-top: 10px;
+}
+
+/* ---------- TABLE ---------- */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    margin-top: 15px;
+    background: #111827;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 th {
-    background-color: #eee;
+    background: #374151;
+    color: #facc15;
+    padding: 10px;
+    text-align: left;
 }
 
+td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+}
+
+tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* ---------- POSTER ---------- */
 img {
-    border-radius: 4px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* ---------- PAGINATION ---------- */
+#pageNum {
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width: 700px){
+    #stats{
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    table{
+        font-size: 0.9rem;
+    }
 }
