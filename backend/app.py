@@ -21,6 +21,11 @@ def get_movies():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
+    print("=== DB DEBUG ===")
+    print("HOST:", os.environ.get("DB_HOST"))
+    print("USER:", os.environ.get("DB_USER"))
+    print("DB:", os.environ.get("DB_NAME"))
+
     cursor.execute("SELECT * FROM movies ORDER BY id DESC")
     movies = cursor.fetchall()
 
