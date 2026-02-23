@@ -1,47 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Movie Collection</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+body{
+    font-family: Arial;
+    background:#0f1a2b;
+    color:white;
+    text-align:center;
+}
 
-<h1>🎬 Movie Collection</h1>
+h1{
+    margin-top:20px;
+}
 
-<div class="controls">
+.controls input,
+.controls select,
+.addBox input{
+    padding:8px;
+    margin:5px;
+    border-radius:6px;
+    border:none;
+}
 
-<input id="search" placeholder="Search title">
+button{
+    padding:8px 12px;
+    border:none;
+    border-radius:6px;
+    background:#28c76f;
+    color:white;
+    cursor:pointer;
+}
 
-<select id="ratingFilter">
-<option value="">All Ratings</option>
-<option>10</option><option>9</option><option>8</option>
-<option>7</option><option>6</option><option>5</option>
-</select>
+.grid{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+}
 
-<select id="sort">
-<option value="title">Sort by Title</option>
-<option value="rating">Sort by Rating</option>
-<option value="year">Sort by Year</option>
-</select>
+.card{
+    background:#1e2b44;
+    padding:15px;
+    margin:10px;
+    border-radius:12px;
+    width:200px;
+    box-shadow:0 5px 10px rgba(0,0,0,.5);
+}
 
-<button onclick="load()">Search</button>
-
-</div>
-
-<div class="addBox">
-<input id="title" placeholder="Title">
-<input id="year" placeholder="Year">
-<input id="genre" placeholder="Genre">
-<input id="rating" placeholder="Rating">
-<input id="image" placeholder="Image URL">
-<button onclick="add()">Add / Update Movie</button>
-</div>
-
-<h2 id="stats"></h2>
-
-<div id="movies" class="grid"></div>
-
-<script src="script.js"></script>
-</body>
-</html>
+.card img{
+    width:100%;
+    border-radius:8px;
+}
