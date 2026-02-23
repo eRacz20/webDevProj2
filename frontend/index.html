@@ -25,6 +25,13 @@
 <option value="year">Sort by Year</option>
 </select>
 
+<select id="size">
+<option>5</option>
+<option selected>10</option>
+<option>20</option>
+<option>50</option>
+</select>
+
 <button onclick="load()">Search</button>
 
 </div>
@@ -41,6 +48,12 @@
 <h2 id="stats"></h2>
 
 <div id="movies" class="grid"></div>
+
+<div class="paging">
+<button onclick="prev()">Prev</button>
+<span id="pageNum"></span>
+<button onclick="next()">Next</button>
+</div>
 
 <script src="script.js"></script>
 </body>

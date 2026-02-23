@@ -1,22 +1,30 @@
 const API="https://webdevproj2.onrender.com";
 
+let page=1;
 let editing=null;
 
+document.getElementById("size").value=
+localStorage.getItem("size")||10;
+
 function imgError(img){
- img.src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Black_Picture.svg/600px-Black_Picture.svg.png";
+ img.src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Film_reel_icon.svg/512px-Film_reel_icon.svg.png";
 }
 
 async function load(){
+
+ let size=document.getElementById("size").value;
+ localStorage.setItem("size",size);
 
  let search=document.getElementById("search").value;
  let rating=document.getElementById("ratingFilter").value;
  let sort=document.getElementById("sort").value;
 
- let r=await fetch(`${API}/movies?search=${search}&rating=${rating}&sort=${sort}`);
+ let r=await fetch(`${API}/movies?page=${page}&size=${size}&search=${search}&rating=${rating}&sort=${sort}`);
  let j=await r.json();
 
- let html="";
+ document.getElementById("pageNum").innerText=`Page ${page}`;
 
+ let html="";
  j.movies.forEach(m=>{
   html+=`
   <div class="card">
@@ -35,6 +43,9 @@ async function load(){
  document.getElementById("stats").innerHTML=
  `Total Movies: ${stats.total} | Avg Rating: ${Number(stats.avg_rating).toFixed(2)}`;
 }
+
+function next(){page++;load();}
+function prev(){if(page>1)page--;load();}
 
 async function add(){
 
