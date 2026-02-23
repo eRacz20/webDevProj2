@@ -1,55 +1,73 @@
 const API="https://webdevproj2.onrender.com";
+let editId=null;
 
-let page=1;
-let size=localStorage.getItem("size")||10;
-document.getElementById("size").value=size;
+async function loadMovies(){
+ let search=document.getElementById("search").value;
+ let rating=document.getElementById("ratingFilter").value;
 
-function imgError(img){
-    img.src="placeholder.png";
+ let res=await fetch(`${API}/movies?search=${search}&rating=${rating}`);
+ let data=await res.json();
+
+ let html="";
+ data.movies.forEach(m=>{
+ html+=`
+ <div class="card">
+ <img src="${m.image_url}" onerror="this.src='https://via.placeholder.com/120x180'"><br>
+ <b>${m.title}</b> (${m.year})<br>
+ ${m.genre} ⭐${m.rating}<br>
+ <button onclick="startEdit(${m.id},'${m.title}',${m.year},'${m.genre}',${m.rating},'${m.image_url}')">Edit</button>
+ <button onclick="del(${m.id})">Delete</button>
+ </div>`;
+ });
+
+ document.getElementById("movies").innerHTML=html;
+
+ let st=await fetch(`${API}/stats`);
+ let stats=await st.json();
+ document.getElementById("stats").innerHTML=
+ `Total Movies: ${stats.total} | Avg Rating: ${stats.avg_rating}`;
 }
 
-async function load(){
-    size=document.getElementById("size").value;
-    localStorage.setItem("size",size);
+function startEdit(id,t,y,g,r,i){
+ editId=id;
+ title.value=t;
+ year.value=y;
+ genre.value=g;
+ rating.value=r;
+ image.value=i;
+}
 
-    let search=document.getElementById("search").value;
-    let sort=document.getElementById("sort").value;
+async function saveMovie(){
+ let data={
+  title:title.value,
+  year:parseInt(year.value),
+  genre:genre.value,
+  rating:parseInt(rating.value),
+  image_url:image.value
+ };
 
-    let r=await fetch(`${API}/movies?page=${page}&size=${size}&search=${search}&sort=${sort}`);
-    let j=await r.json();
+ if(editId){
+  await fetch(`${API}/movies/${editId}`,{
+   method:"PUT",
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify(data)
+  });
+  editId=null;
+ }else{
+  await fetch(`${API}/movies`,{
+   method:"POST",
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify(data)
+  });
+ }
 
-    document.getElementById("page").innerText=`Page ${page}`;
-
-    let html="";
-    j.movies.forEach(m=>{
-        html+=`
-        <div class="card">
-            <img src="${m.image_url}" onerror="imgError(this)">
-            <div>
-                <b>${m.title}</b> (${m.year})<br>
-                ${m.genre} ⭐${m.rating}<br>
-                <button onclick="del(${m.id})">Delete</button>
-            </div>
-        </div>`;
-    });
-
-    document.getElementById("movies").innerHTML=html;
-
-    let s=await fetch(`${API}/stats`);
-    let stats=await s.json();
-    document.getElementById("stats").innerHTML=
-        `Total Movies: ${stats.total}<br>
-         Avg Rating: ${Number(stats.avg_rating).toFixed(2)}<br>
-         Genres: ${stats.genres}`;
+ loadMovies();
 }
 
 async function del(id){
-    if(!confirm("Delete movie?")) return;
-    await fetch(`${API}/movies/${id}`,{method:"DELETE"});
-    load();
+ if(!confirm("Delete movie?")) return;
+ await fetch(`${API}/movies/${id}`,{method:"DELETE"});
+ loadMovies();
 }
 
-function next(){page++;load();}
-function prev(){if(page>1)page--;load();}
-
-load();
+loadMovies();
