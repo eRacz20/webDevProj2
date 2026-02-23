@@ -5,15 +5,13 @@ import os, psycopg2
 app = Flask(__name__)
 CORS(app)
 
-# ---------------- DB CONNECTION ----------------
 def db():
     return psycopg2.connect(os.getenv("DATABASE_URL"))
 
-# ---------------- CREATE TABLE + SEED ----------------
+# ---------- CREATE TABLE IF NOT EXISTS ----------
 def init_db():
     conn = db()
     cur = conn.cursor()
-
     cur.execute("""
         CREATE TABLE IF NOT EXISTS movies(
             id SERIAL PRIMARY KEY,
@@ -24,72 +22,39 @@ def init_db():
             image_url TEXT
         );
     """)
-
-    cur.execute("SELECT COUNT(*) FROM movies;")
-    count = cur.fetchone()[0]
-
-    if count == 0:
-        print("Seeding movies...")
-        movies = [
-            ("Inception",2010,"Sci-Fi",9,"https://via.placeholder.com/120x180"),
-            ("Titanic",1997,"Romance",8,"https://via.placeholder.com/120x180"),
-            ("The Matrix",1999,"Sci-Fi",10,"https://via.placeholder.com/120x180"),
-            ("Avatar",2009,"Fantasy",7,"https://via.placeholder.com/120x180"),
-            ("Toy Story",1995,"Animation",9,"https://via.placeholder.com/120x180"),
-        ]
-
-        for m in movies:
-            cur.execute(
-                "INSERT INTO movies(title,year,genre,rating,image_url) VALUES(%s,%s,%s,%s,%s)",
-                m
-            )
-
-        conn.commit()
-
+    conn.commit()
     cur.close()
     conn.close()
 
 init_db()
 
-# ---------------- ROUTES ----------------
-
 @app.route("/")
 def home():
     return "Movie API running"
 
+# ---------- READ ----------
 @app.route("/movies")
 def get_movies():
-    page = int(request.args.get("page",1))
-    size = int(request.args.get("size",10))
-    search = request.args.get("search","")
-
-    offset = (page-1)*size
-
     conn=db()
     cur=conn.cursor()
 
-    cur.execute("""
-        SELECT * FROM movies
-        WHERE title ILIKE %s
-        ORDER BY title
-        LIMIT %s OFFSET %s
-    """,(f"%{search}%",size,offset))
+    cur.execute("SELECT * FROM movies ORDER BY id DESC")
+    rows = cur.fetchall()
 
-    movies = cur.fetchall()
-
-    cur.execute("SELECT COUNT(*) FROM movies")
-    total = cur.fetchone()[0]
+    movies=[{
+        "id":r[0],
+        "title":r[1],
+        "year":r[2],
+        "genre":r[3],
+        "rating":r[4],
+        "image_url":r[5]
+    } for r in rows]
 
     cur.close()
     conn.close()
+    return jsonify({"movies":movies})
 
-    result = [
-        {"id":m[0],"title":m[1],"year":m[2],"genre":m[3],"rating":m[4],"image_url":m[5]}
-        for m in movies
-    ]
-
-    return jsonify({"movies":result,"total":total})
-
+# ---------- CREATE ----------
 @app.route("/movies",methods=["POST"])
 def add_movie():
     d=request.json
@@ -102,6 +67,21 @@ def add_movie():
     cur.close();conn.close()
     return {"msg":"added"}
 
+# ---------- UPDATE ----------
+@app.route("/movies/<int:id>",methods=["PUT"])
+def edit_movie(id):
+    d=request.json
+    conn=db();cur=conn.cursor()
+    cur.execute("""
+        UPDATE movies
+        SET title=%s,year=%s,genre=%s,rating=%s,image_url=%s
+        WHERE id=%s
+    """,(d["title"],d["year"],d["genre"],d["rating"],d["image_url"],id))
+    conn.commit()
+    cur.close();conn.close()
+    return {"msg":"updated"}
+
+# ---------- DELETE ----------
 @app.route("/movies/<int:id>",methods=["DELETE"])
 def delete_movie(id):
     conn=db();cur=conn.cursor()
@@ -110,14 +90,5 @@ def delete_movie(id):
     cur.close();conn.close()
     return {"msg":"deleted"}
 
-@app.route("/stats")
-def stats():
-    conn=db();cur=conn.cursor()
-    cur.execute("SELECT COUNT(*), AVG(rating) FROM movies")
-    total, avg = cur.fetchone()
-    cur.close();conn.close()
-    return jsonify({"total":total,"avg_rating":avg})
-
-# ---------------- RUN LOCAL ----------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    app.run(host="0.0.0.0",port=int(os.getenv("PORT",5000)))

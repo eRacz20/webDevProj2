@@ -1,40 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Movie Collection</title>
-<link rel="stylesheet" href="style.css">
+<title>Movie Manager</title>
+<style>
+body{font-family:Arial;margin:40px}
+.card{border:1px solid #ccc;padding:10px;margin:10px;width:300px}
+img{width:120px}
+</style>
 </head>
+
 <body>
 
-<h1>🎬 Movie Collection</h1>
+<h1>🎬 Movie Manager</h1>
 
-<div class="controls">
-<input id="search" placeholder="Search title">
-<select id="sort">
-<option value="title">Sort by Title</option>
-<option value="year">Sort by Year</option>
-<option value="rating">Sort by Rating</option>
-</select>
+<h2>Add / Edit Movie</h2>
+<input id="title" placeholder="Title"><br>
+<input id="year" placeholder="Year"><br>
+<input id="genre" placeholder="Genre"><br>
+<input id="rating" placeholder="Rating"><br>
+<input id="image" placeholder="Image URL"><br>
+<button onclick="saveMovie()">Save Movie</button>
 
-<select id="size">
-<option>5</option><option selected>10</option>
-<option>20</option><option>50</option>
-</select>
-
-<button onclick="load()">Apply</button>
-</div>
-
+<h2>Movies</h2>
 <div id="movies"></div>
 
-<div class="paging">
-<button onclick="prev()">Prev</button>
-<span id="page"></span>
-<button onclick="next()">Next</button>
-</div>
+<script>
+const API="https://webdevproj2.onrender.com";
+let editingId=null;
 
-<h2>Stats</h2>
-<div id="stats"></div>
+async function load(){
+    let r=await fetch(`${API}/movies`);
+    let j=await r.json();
 
-<script src="script.js"></script>
+    let html="";
+    j.movies.forEach(m=>{
+        html+=`
+        <div class="card">
+            <img src="${m.image_url}" onerror="this.src='https://via.placeholder.com/120x180'"><br>
+            <b>${m.title}</b> (${m.year})<br>
+            ${m.genre} ⭐${m.rating}<br>
+            <button onclick="startEdit(${m.id},'${m.title}',${m.year},'${m.genre}',${m.rating},'${m.image_url}')">Edit</button>
+            <button onclick="deleteMovie(${m.id})">Delete</button>
+        </div>`;
+    });
+
+    movies.innerHTML=html;
+}
+
+function startEdit(id,title,year,genre,rating,image){
+    editingId=id;
+    titleInput.value=title;
+    yearInput.value=year;
+    genreInput.value=genre;
+    ratingInput.value=rating;
+    imageInput.value=image;
+}
+
+async function saveMovie(){
+    let data={
+        title:title.value,
+        year:parseInt(year.value),
+        genre:genre.value,
+        rating:parseInt(rating.value),
+        image_url:image.value
+    };
+
+    if(editingId){
+        await fetch(`${API}/movies/${editingId}`,{
+            method:"PUT",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(data)
+        });
+        editingId=null;
+    }else{
+        await fetch(`${API}/movies`,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(data)
+        });
+    }
+
+    load();
+}
+
+async function deleteMovie(id){
+    if(!confirm("Delete movie?")) return;
+    await fetch(`${API}/movies/${id}`,{method:"DELETE"});
+    load();
+}
+
+load();
+</script>
+
 </body>
 </html>
