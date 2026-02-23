@@ -1,107 +1,90 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
-import os
+import mysql.connector, os
 
 app = Flask(__name__)
 CORS(app)
 
-# ---------- DB CONNECTION ----------
-
-def get_db():
+def db():
     return mysql.connector.connect(
-        host=os.environ["DB_HOST"],
-        user=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-        database=os.environ["DB_NAME"]
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME")
     )
-# ---------- READ ----------
-@app.route("/movies", methods=["GET"])
+
+@app.route("/")
+def home():
+    return "Movie API running"
+
+# READ with paging/search/sort
+@app.route("/movies")
 def get_movies():
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
+    page = int(request.args.get("page",1))
+    size = int(request.args.get("size",10))
+    search = request.args.get("search","")
+    sort = request.args.get("sort","title")
 
-    print("=== DB DEBUG ===")
-    print("HOST:", os.environ.get("DB_HOST"))
-    print("USER:", os.environ.get("DB_USER"))
-    print("DB:", os.environ.get("DB_NAME"))
+    offset = (page-1)*size
 
-    cursor.execute("SELECT * FROM movies ORDER BY id DESC")
-    movies = cursor.fetchall()
+    conn=db();cur=conn.cursor(dictionary=True)
 
-    cursor.close()
-    db.close()
-    return jsonify(movies)
+    cur.execute(f"""
+        SELECT * FROM movies
+        WHERE title LIKE %s
+        ORDER BY {sort}
+        LIMIT %s OFFSET %s
+    """,(f"%{search}%",size,offset))
 
-# ---------- CREATE ----------
-@app.route("/movies", methods=["POST"])
+    movies=cur.fetchall()
+
+    cur.execute("SELECT COUNT(*) total FROM movies")
+    total=cur.fetchone()["total"]
+
+    return jsonify({"movies":movies,"total":total})
+
+# CREATE
+@app.route("/movies",methods=["POST"])
 def add_movie():
-    data = request.json
+    d=request.json
+    conn=db();cur=conn.cursor()
+    cur.execute("""
+        INSERT INTO movies(title,year,genre,rating,image_url)
+        VALUES(%s,%s,%s,%s,%s)
+    """,(d["title"],d["year"],d["genre"],d["rating"],d["image_url"]))
+    conn.commit()
+    return {"msg":"added"}
 
-    db = get_db()
-    cursor = db.cursor()
-
-    sql = """
-        INSERT INTO movies (title, genre, year, rating, image_url)
-        VALUES (%s, %s, %s, %s, %s)
-    """
-    cursor.execute(sql, (
-        data["title"],
-        data["genre"],
-        data["year"],
-        data["rating"],
-        data.get("image_url", "")
-    ))
-
-    db.commit()
-    cursor.close()
-    db.close()
-
-    return {"message": "Movie added"}, 201
-
-# ---------- UPDATE ----------
-@app.route("/movies/<int:id>", methods=["PUT"])
-def update_movie(id):
-    data = request.json
-
-    db = get_db()
-    cursor = db.cursor()
-
-    sql = """
-        UPDATE movies
-        SET title=%s, genre=%s, year=%s, rating=%s, image_url=%s
+# UPDATE
+@app.route("/movies/<int:id>",methods=["PUT"])
+def edit_movie(id):
+    d=request.json
+    conn=db();cur=conn.cursor()
+    cur.execute("""
+        UPDATE movies SET title=%s,year=%s,genre=%s,rating=%s,image_url=%s
         WHERE id=%s
-    """
-    cursor.execute(sql, (
-        data["title"],
-        data["genre"],
-        data["year"],
-        data["rating"],
-        data.get("image_url", ""),
-        id
-    ))
+    """,(d["title"],d["year"],d["genre"],d["rating"],d["image_url"],id))
+    conn.commit()
+    return {"msg":"updated"}
 
-    db.commit()
-    cursor.close()
-    db.close()
-
-    return {"message": "Movie updated"}
-
-# ---------- DELETE ----------
-@app.route("/movies/<int:id>", methods=["DELETE"])
+# DELETE
+@app.route("/movies/<int:id>",methods=["DELETE"])
 def delete_movie(id):
-    db = get_db()
-    cursor = db.cursor()
+    conn=db();cur=conn.cursor()
+    cur.execute("DELETE FROM movies WHERE id=%s",(id,))
+    conn.commit()
+    return {"msg":"deleted"}
 
-    cursor.execute("DELETE FROM movies WHERE id=%s", (id,))
-    db.commit()
+# STATS
+@app.route("/stats")
+def stats():
+    conn=db();cur=conn.cursor(dictionary=True)
+    cur.execute("""
+        SELECT COUNT(*) total,
+               AVG(rating) avg_rating,
+               COUNT(DISTINCT genre) genres
+        FROM movies
+    """)
+    return jsonify(cur.fetchone())
 
-    cursor.close()
-    db.close()
-
-    return {"message": "Deleted"}
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+app.run(host="0.0.0.0",port=5000)
