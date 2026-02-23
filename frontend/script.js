@@ -1,4 +1,4 @@
-const API="ttps://webdevproj2.onrender.com";
+const API="https://webdevproj2.onrender.com";
 
 let page=1;
 let size=localStorage.getItem("size")||10;
