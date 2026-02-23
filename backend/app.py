@@ -7,6 +7,7 @@ import psycopg2.extras
 app = Flask(__name__)
 CORS(app)
 
+DEFAULT_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtmhk5_HuVd4Rc1-9RtFIpS9wB4od2wOvEEw&s"
 # ---------- DB CONNECTION ----------
 def db():
     return psycopg2.connect(os.getenv("DATABASE_URL"))
@@ -120,28 +121,38 @@ def get_movies():
 # ---------- ADD ----------
 @app.route("/movies",methods=["POST"])
 def add_movie():
-    d=request.json
-    conn=db()
-    cur=conn.cursor()
+    d = request.json
+
+    image = d.get("image_url") or DEFAULT_IMG
+
+    conn = db()
+    cur = conn.cursor()
     cur.execute("""
         INSERT INTO movies(title,year,genre,rating,image_url)
         VALUES(%s,%s,%s,%s,%s)
-    """,(d["title"],d["year"],d["genre"],d["rating"],d["image_url"]))
+    """,(d["title"],d["year"],d["genre"],d["rating"],image))
     conn.commit()
-    return {"msg":"added"}
+    cur.close()
+    conn.close()
 
+    return {"msg":"added"}
 # ---------- EDIT ----------
 @app.route("/movies/<int:id>",methods=["PUT"])
 def edit_movie(id):
-    d=request.json
-    conn=db()
-    cur=conn.cursor()
+    d = request.json
+    image = d.get("image_url") or DEFAULT_IMG
+
+    conn = db()
+    cur = conn.cursor()
     cur.execute("""
         UPDATE movies
         SET title=%s,year=%s,genre=%s,rating=%s,image_url=%s
         WHERE id=%s
-    """,(d["title"],d["year"],d["genre"],d["rating"],d["image_url"],id))
+    """,(d["title"],d["year"],d["genre"],d["rating"],image,id))
     conn.commit()
+    cur.close()
+    conn.close()
+
     return {"msg":"updated"}
 
 # ---------- DELETE ----------
