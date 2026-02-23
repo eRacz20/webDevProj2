@@ -1,45 +1,47 @@
-body{
- font-family:Arial;
- background:#0f172a;
- color:white;
- padding:30px;
-}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Movie Collection</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-h1{text-align:center}
+<h1>🎬 Movie Collection</h1>
 
-.controls,.form{
- text-align:center;
- margin-bottom:20px;
-}
+<div class="controls">
 
-input,select,button{
- padding:8px;
- margin:5px;
- border-radius:5px;
- border:none;
-}
+<input id="search" placeholder="Search title">
 
-button{
- background:#22c55e;
- color:white;
- cursor:pointer;
-}
-button:hover{background:#16a34a}
+<select id="ratingFilter">
+<option value="">All Ratings</option>
+<option>10</option><option>9</option><option>8</option>
+<option>7</option><option>6</option><option>5</option>
+</select>
 
-.grid{
- display:grid;
- grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
- gap:20px;
-}
+<select id="sort">
+<option value="title">Sort by Title</option>
+<option value="rating">Sort by Rating</option>
+<option value="year">Sort by Year</option>
+</select>
 
-.card{
- background:#1e293b;
- padding:15px;
- border-radius:10px;
- text-align:center;
- box-shadow:0 0 10px rgba(0,0,0,.5);
-}
+<button onclick="load()">Search</button>
 
-.card img{width:120px;border-radius:5px}
+</div>
 
-.stats{text-align:center;margin-bottom:20px}
+<div class="addBox">
+<input id="title" placeholder="Title">
+<input id="year" placeholder="Year">
+<input id="genre" placeholder="Genre">
+<input id="rating" placeholder="Rating">
+<input id="image" placeholder="Image URL">
+<button onclick="add()">Add / Update Movie</button>
+</div>
+
+<h2 id="stats"></h2>
+
+<div id="movies" class="grid"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -29,40 +29,38 @@ def init_db():
 
     if count < 30:
         cur.execute("DELETE FROM movies")
-
         movies=[
-("Inception",2010,"Sci-Fi",9,"https://via.placeholder.com/120x180"),
-("Titanic",1997,"Romance",8,"https://via.placeholder.com/120x180"),
-("The Matrix",1999,"Sci-Fi",10,"https://via.placeholder.com/120x180"),
-("Avatar",2009,"Fantasy",7,"https://via.placeholder.com/120x180"),
-("Toy Story",1995,"Animation",9,"https://via.placeholder.com/120x180"),
-("The Dark Knight",2008,"Action",10,"https://via.placeholder.com/120x180"),
-("Forrest Gump",1994,"Drama",9,"https://via.placeholder.com/120x180"),
-("Gladiator",2000,"Action",9,"https://via.placeholder.com/120x180"),
-("Interstellar",2014,"Sci-Fi",9,"https://via.placeholder.com/120x180"),
-("Joker",2019,"Drama",8,"https://via.placeholder.com/120x180"),
-("Frozen",2013,"Animation",7,"https://via.placeholder.com/120x180"),
-("Up",2009,"Animation",9,"https://via.placeholder.com/120x180"),
-("Iron Man",2008,"Action",8,"https://via.placeholder.com/120x180"),
-("Black Panther",2018,"Action",8,"https://via.placeholder.com/120x180"),
-("Finding Nemo",2003,"Animation",9,"https://via.placeholder.com/120x180"),
-("Cars",2006,"Animation",7,"https://via.placeholder.com/120x180"),
-("The Lion King",1994,"Animation",10,"https://via.placeholder.com/120x180"),
-("Shrek",2001,"Animation",8,"https://via.placeholder.com/120x180"),
-("Harry Potter 1",2001,"Fantasy",8,"https://via.placeholder.com/120x180"),
-("Harry Potter 2",2002,"Fantasy",8,"https://via.placeholder.com/120x180"),
-("Harry Potter 3",2004,"Fantasy",9,"https://via.placeholder.com/120x180"),
-("Spider-Man",2002,"Action",7,"https://via.placeholder.com/120x180"),
-("Spider-Man 2",2004,"Action",9,"https://via.placeholder.com/120x180"),
-("Spider-Man 3",2007,"Action",6,"https://via.placeholder.com/120x180"),
-("Doctor Strange",2016,"Action",8,"https://via.placeholder.com/120x180"),
-("Thor",2011,"Action",7,"https://via.placeholder.com/120x180"),
-("Captain America",2011,"Action",7,"https://via.placeholder.com/120x180"),
-("Deadpool",2016,"Action",8,"https://via.placeholder.com/120x180"),
-("Logan",2017,"Action",9,"https://via.placeholder.com/120x180"),
-("The Avengers",2012,"Action",9,"https://via.placeholder.com/120x180")
+        ("The Dark Knight",2008,"Action",10,"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"),
+        ("Inception",2010,"Sci-Fi",9,"https://image.tmdb.org/t/p/w500/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg"),
+        ("Interstellar",2014,"Sci-Fi",10,"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"),
+        ("Titanic",1997,"Romance",8,"https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg"),
+        ("The Matrix",1999,"Sci-Fi",10,"https://image.tmdb.org/t/p/w500/aOIuZAjPaRIE6CMzbazvcHuHXDc.jpg"),
+        ("Avatar",2009,"Fantasy",7,"https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg"),
+        ("Fight Club",1999,"Drama",9,"https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"),
+        ("Forrest Gump",1994,"Drama",10,"https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg"),
+        ("Gladiator",2000,"Action",9,"https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg"),
+        ("Jurassic Park",1993,"Adventure",9,"https://image.tmdb.org/t/p/w500/c414cDeQ9b6qLPLeKmiJuLDUREJ.jpg"),
+        ("The Lion King",1994,"Animation",10,"https://image.tmdb.org/t/p/w500/2bXbqYdUdNVa8VIWXVfclP2ICtT.jpg"),
+        ("Frozen",2013,"Animation",8,"https://image.tmdb.org/t/p/w500/kgwjIb2JDHRhNk13lmSxiClFjVk.jpg"),
+        ("Toy Story",1995,"Animation",9,"https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg"),
+        ("The Avengers",2012,"Action",8,"https://image.tmdb.org/t/p/w500/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg"),
+        ("Iron Man",2008,"Action",8,"https://image.tmdb.org/t/p/w500/78lPtwv72eTNqFW9COBYI0dWDJa.jpg"),
+        ("Spider-Man",2002,"Action",8,"https://image.tmdb.org/t/p/w500/gh4cZbhZxyTbgxQPxD0dOudNPTn.jpg"),
+        ("Harry Potter 1",2001,"Fantasy",9,"https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg"),
+        ("Harry Potter 2",2002,"Fantasy",8,"https://image.tmdb.org/t/p/w500/sdEOH0992YZ0QSxgXNIGLq1ToUi.jpg"),
+        ("Lord of the Rings 1",2001,"Fantasy",10,"https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg"),
+        ("Lord of the Rings 2",2002,"Fantasy",10,"https://image.tmdb.org/t/p/w500/5VTN0pR8gcqV3EPUHHfMGnJYN9L.jpg"),
+        ("Lord of the Rings 3",2003,"Fantasy",10,"https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg"),
+        ("Top Gun",1986,"Action",8,"https://image.tmdb.org/t/p/w500/bVq65huQ8vHDd1a4Z37QtuyEvpA.jpg"),
+        ("Top Gun Maverick",2022,"Action",9,"https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg"),
+        ("Joker",2019,"Drama",9,"https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"),
+        ("Shrek",2001,"Animation",8,"https://image.tmdb.org/t/p/w500/iB64vpL3dIObOtMZgX3RqdVdQDc.jpg"),
+        ("Cars",2006,"Animation",7,"https://image.tmdb.org/t/p/w500/abW5AzHDaIK1n9C36VdAeOwORRA.jpg"),
+        ("Up",2009,"Animation",9,"https://image.tmdb.org/t/p/w500/mFvoEwSfLqbcWwFsDjQebn9bzFe.jpg"),
+        ("Finding Nemo",2003,"Animation",9,"https://image.tmdb.org/t/p/w500/eHuGQ10FUzK1mdOY69wF5pGgEf5.jpg"),
+        ("Coco",2017,"Animation",10,"https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg"),
+        ("Moana",2016,"Animation",8,"https://image.tmdb.org/t/p/w500/4JeeQKzH5WfK3wM1TSt7YqTQ2h3.jpg")
         ]
-
         for m in movies:
             cur.execute(
                 "INSERT INTO movies(title,year,genre,rating,image_url) VALUES(%s,%s,%s,%s,%s)",
@@ -82,39 +80,41 @@ def home():
 # ---------- GET MOVIES ----------
 @app.route("/movies")
 def get_movies():
-    search=request.args.get("search","")
-    rating=request.args.get("rating","")
+    page = int(request.args.get("page",1))
+    size = int(request.args.get("size",20))
+    search = request.args.get("search","")
+    rating = request.args.get("rating","")
+    sort = request.args.get("sort","title")
+
+    allowed_sort = ["title","rating","year"]
+    if sort not in allowed_sort:
+        sort="title"
+
+    offset=(page-1)*size
 
     conn=db()
-    cur=conn.cursor()
+    cur=conn.cursor(dictionary=True)
 
-    query="SELECT * FROM movies WHERE 1=1"
-    params=[]
-
-    if search:
-        query+=" AND LOWER(title) LIKE %s"
-        params.append(f"%{search.lower()}%")
+    sql = """
+        SELECT * FROM movies
+        WHERE title ILIKE %s
+    """
+    params=[f"%{search}%"]
 
     if rating:
-        query+=" AND rating >= %s"
+        sql += " AND rating=%s"
         params.append(rating)
 
-    query+=" ORDER BY title"
-    cur.execute(query,params)
+    sql += f" ORDER BY {sort} LIMIT %s OFFSET %s"
+    params += [size,offset]
 
-    rows=cur.fetchall()
+    cur.execute(sql,params)
+    movies=cur.fetchall()
 
-    movies=[{
-        "id":r[0],
-        "title":r[1],
-        "year":r[2],
-        "genre":r[3],
-        "rating":r[4],
-        "image_url":r[5]
-    } for r in rows]
+    cur.execute("SELECT COUNT(*) total FROM movies")
+    total=cur.fetchone()["total"]
 
-    return jsonify({"movies":movies})
-
+    return jsonify({"movies":movies,"total":total})
 # ---------- ADD ----------
 @app.route("/movies",methods=["POST"])
 def add_movie():
