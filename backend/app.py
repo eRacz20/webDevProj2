@@ -10,10 +10,10 @@ CORS(app)
 
 def get_db():
     return mysql.connector.connect(
-        host=os.environ.get("DB_HOST", "localhost"),
-        user=os.environ.get("DB_USER", "root"),
-        password=os.environ.get("DB_PASSWORD"),
-        database=os.environ.get("DB_NAME", "MovieWebDB")
+        host=os.environ["DB_HOST"],
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        database=os.environ["DB_NAME"]
     )
 # ---------- READ ----------
 @app.route("/movies", methods=["GET"])
